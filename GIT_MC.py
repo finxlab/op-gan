@@ -97,12 +97,12 @@ opdat = joblib.load('data/processed/opdat.pkl')
 
 noises = np.random.normal(0, 1, (100, 10000))
 
-call_list = opdat[opdat['cp_flag']=='C']['symbol'].unique()
-# put_list = opdat[opdat['cp_flag']=='P']['symbol'].unique()
+# call_list = opdat[opdat['cp_flag']=='C']['symbol'].unique()
+put_list = opdat[opdat['cp_flag']=='P']['symbol'].unique()
 num_simulations = 10000
 
-sb_data = opdat[opdat['symbol'].isin(call_list)].groupby('symbol')
-# sb_data = opdat[opdat['symbol'].isin(put_list)].groupby('symbol')
+# sb_data = opdat[opdat['symbol'].isin(call_list)].groupby('symbol')
+sb_data = opdat[opdat['symbol'].isin(put_list)].groupby('symbol')
 del opdat
 #43500 까지 500
 all_price = []
@@ -145,15 +145,23 @@ for sb, temp in tqdm(sb_data):
         indexes_, Edates_
 
     if (i+1) % 100 == 0:
-        joblib.dump(all_price, ('results/pricing_results/Price/MC/CALL/res' + str(i//100) + '.pkl') )
+        # joblib.dump(all_price, ('results/pricing_results/Price/MC/CALL/res' + str(i//100) + '.pkl') )
+        # joblib.dump(all_delta, (
+        #             'results/pricing_results/Delta/MC/CALL/res' + str(i // 100) + '.pkl'))
+
+        joblib.dump(all_price, ('results/pricing_results/Price/MC/PUT/res' + str(i // 100) + '.pkl'))
         joblib.dump(all_delta, (
-                    'results/pricing_results/Delta/MC/CALL/res' + str(i // 100) + '.pkl'))
+                'results/pricing_results/Delta/MC/PUT/res' + str(i // 100) + '.pkl'))
 
         all_price.clear()
         all_delta.clear()
         gc.collect()
 
 if len(all_price)>0:
-    joblib.dump(all_price, ('results/pricing_results/Price/MC/CALL/res' + str(1 + i // 100) + '.pkl'))
+    # joblib.dump(all_price, ('results/pricing_results/Price/MC/CALL/res' + str(1 + i // 100) + '.pkl'))
+    # joblib.dump(all_delta, (
+    #         'results/pricing_results/Delta/MC/CALL/res' + str(i // 100) + '.pkl'))
+
+    joblib.dump(all_price, ('results/pricing_results/Price/MC/PUT/res' + str(1 + i // 100) + '.pkl'))
     joblib.dump(all_delta, (
-            'results/pricing_results/Delta/MC/CALL/res' + str(i // 100) + '.pkl'))
+            'results/pricing_results/Delta/MC/PUT/res' + str(i // 100) + '.pkl'))

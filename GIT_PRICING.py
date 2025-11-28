@@ -11,9 +11,12 @@ import warnings
 warnings.filterwarnings(action='ignore')
 
 
-# dir_ = 'noise_path/TimeCWGAN/'
-# dir_ = 'noise_path/QuantCWGAN/'
-dir_ = 'noise_path/SigCWGAN/'
+
+# modelnm = 'TimeGAN/'
+# modelnm = 'QuantGAN/'
+modelnm = 'SigCWGAN/'
+
+dir_ = 'noise_path/' + modelnm
 pathlist = os.listdir(dir_)
 pathlist = [x for x in pathlist if '.pkl' in x]
 pathlist = sorted(pathlist, key = lambda x: int(x.split('_')[-1].split('.')[0][5:]))
@@ -73,12 +76,12 @@ def price_cal(sprice, rf_, strike, cp_flag, num_steps, simulated_data):
 
 opdat = joblib.load('data/processed/opdat.pkl')
 
-call_list = opdat[opdat['cp_flag']=='C']['symbol'].unique()
-# put_list = opdat[opdat['cp_flag']=='P']['symbol'].unique()
+# call_list = opdat[opdat['cp_flag']=='C']['symbol'].unique()
+put_list = opdat[opdat['cp_flag']=='P']['symbol'].unique()
 num_simulations = 10000
 
-sb_data = opdat[opdat['symbol'].isin(call_list)].groupby('symbol')
-# sb_data = opdat[opdat['symbol'].isin(put_list)].groupby('symbol')
+# sb_data = opdat[opdat['symbol'].isin(call_list)].groupby('symbol')
+sb_data = opdat[opdat['symbol'].isin(put_list)].groupby('symbol')
 del opdat
 
 all_price = []
@@ -122,15 +125,23 @@ for sb, temp in tqdm(sb_data):
         indexes_, Edates_
 
     if (i+1) % 100 == 0:
-        joblib.dump(all_price, ('results/pricing_results/Price/SigCWGAN/CALL/res' + str(i//100) + '.pkl') )
+        # joblib.dump(all_price, ('results/pricing_results/Price/' +modelnm+ 'CALL/res' + str(i//100) + '.pkl') )
+        # joblib.dump(all_delta, (
+        #             'results/pricing_results/Delta/'+modelnm+ 'CALL/res' + str(i // 100) + '.pkl'))
+
+        joblib.dump(all_price, ('results/pricing_results/Price/' + modelnm + 'PUT/res' + str(i // 100) + '.pkl'))
         joblib.dump(all_delta, (
-                    'results/pricing_results/Delta/SigCWGAN/CALL/res' + str(i // 100) + '.pkl'))
+                'results/pricing_results/Delta/' + modelnm + 'PUT/res' + str(i // 100) + '.pkl'))
 
         all_price.clear()
         all_delta.clear()
         gc.collect()
 
 if len(all_price)>0:
-    joblib.dump(all_price, ('results/pricing_results/Price/SigCWGAN/CALL/res' + str(1 + i // 100) + '.pkl'))
+    # joblib.dump(all_price, ('results/pricing_results/Price/' + modelnm + 'CALL/res' + str(1 + i // 100) + '.pkl'))
+    # joblib.dump(all_delta, (
+    #         'results/pricing_results/Delta/' + modelnm + 'CALL/res' + str(i // 100) + '.pkl'))
+
+    joblib.dump(all_price, ('results/pricing_results/Price/' + modelnm + 'PUT/res' + str(1 + i // 100) + '.pkl'))
     joblib.dump(all_delta, (
-            'results/pricing_results/Delta/SigCWGAN/CALL/res' + str(i // 100) + '.pkl'))
+            'results/pricing_results/Delta/' + modelnm + 'PUT/res' + str(i // 100) + '.pkl'))
