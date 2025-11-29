@@ -37,14 +37,11 @@ daily_rates = []
 for day_ in tqdm(range(riskfree.shape[0])):
     yields = riskfree.iloc[day_].dropna()
 
-    # 추정할 파라미터들의 초기값 설정
-    # 초기값에 따라 최적화 결과가 달라질 수 있으므로 적절한 값을 주는 것이 중요합니다.
-    # 일반적으로 [장기, 단기, 중기, 수렴 속도]에 대한 추정치를 넣습니다.
 
-    beta0_initial = yields[-1] # 가장 긴 만기(30년)의 수익률
-    beta1_initial = yields['1 Yr'] - yields[-1] # 1년 만기 수익률 - 30년 만기 수익률
-    beta2_initial = 0.0 # 일반적으로 0으로 시작
-    lambda_initial = 1.0 # 1.0 ~ 3.0 사이의 값
+    beta0_initial = yields[-1]
+    beta1_initial = yields['1 Yr'] - yields[-1] 
+    beta2_initial = 0.0
+    lambda_initial = 1.0 
 
     initial_params = np.array([beta0_initial, beta1_initial, beta2_initial, lambda_initial])
 
@@ -53,7 +50,7 @@ for day_ in tqdm(range(riskfree.shape[0])):
     result = minimize(sse_function, initial_params, args=(temp_mat, yields), method='L-BFGS-B')
 
     if result.success:
-        estimated_betas = result.x[:3]  # 베타 0, 1, 2 추출
+        estimated_betas = result.x[:3] 
         estimated_lambda = result.x[3]
 
 
@@ -61,7 +58,7 @@ for day_ in tqdm(range(riskfree.shape[0])):
 
         daily_rates.append(estimated_yields)
     else:
-        print("최적화에 실패했습니다.")
+        print("Failed to Optimize.")
         print(result.message)
 
 
@@ -70,3 +67,4 @@ yield_curve.columns = range(2,255)
 yield_curve.index = riskfree.index
 
 yield_curve.to_csv('data/processed/rfcurve.csv')
+
