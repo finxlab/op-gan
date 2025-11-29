@@ -17,7 +17,7 @@ from arch.bootstrap import MCS
 
 def calculate_metrics(df):
     actual = df['real'].values
-    model_columns = df.columns[1:]  # 'Actual'을 제외한 모델 컬럼
+    model_columns = df.columns[1:]  
 
     performance_dict = {'RMSE': [], 'MAE': [], 'MAPE': []}
 
@@ -174,4 +174,5 @@ whole_res = pd.concat([whole_mean_c[0], whole_mean_p[0], whole_mean[0]])
 mcs_whole = pd.concat(yearly_mcs([[item for sublist in call_index for item in sublist]], spc.dropna().astype(float))+
                        yearly_mcs([[item for sublist in put_index for item in sublist]], spp.dropna().astype(float))+
                        yearly_mcs([[item for sublist in call_index for item in sublist] + [item for sublist in put_index for item in sublist]],
+
                                   pd.concat([spc.dropna().astype(float), spp.dropna().astype(float)])))
